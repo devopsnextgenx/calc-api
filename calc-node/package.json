@@ -1,0 +1,26 @@
+{
+  "name": "calc-napi",
+  "version": "0.0.1",
+  "description": "Calc lib interface with node",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "cmake-js compile",
+    "test": "tsc && node dist/index.js"
+  },
+  "binary": {
+    "napi_versions": [
+      9
+    ]
+  },
+  "author": "amit.kshirsagar.13@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "cmake-js": "^7.3.1",
+    "node-addon-api": "^8.3.1",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "node-gyp": "^11.2.0"
+  }
+}
