@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "build": "cmake-js compile",
-    "test": "tsc && node dist/index.js"
+    "test": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "start": "nodemon --watch src --ext ts --exec ts-node src/server.ts"
   },
   "binary": {
     "napi_versions": [
@@ -16,10 +17,14 @@
   "license": "ISC",
   "dependencies": {
     "cmake-js": "^7.3.1",
+    "express": "^5.1.0",
     "node-addon-api": "^8.3.1",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@types/express": "^5.0.3",
     "@types/node": "^22.15.29",
     "node-gyp": "^11.2.0"
   }
