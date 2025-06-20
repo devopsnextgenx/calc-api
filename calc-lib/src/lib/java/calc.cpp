@@ -14,7 +14,7 @@ JNIEXPORT jint JNICALL Java_io_calc_nativex_Calc_mul(JNIEnv *env, jobject obj, j
     return calc::mul(a, b);
 }
 
-JNIEXPORT jdouble JNICALL Java_io_calc_nativex_Calc_divx(JNIEnv *env, jobject obj, jdouble a, jdouble b) {
+JNIEXPORT jfloat JNICALL Java_io_calc_nativex_Calc_divx(JNIEnv *env, jobject obj, jdouble a, jdouble b) {
     return calc::divx(a, b);
 }
 

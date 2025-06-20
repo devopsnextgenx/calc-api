@@ -29,7 +29,9 @@ public class CalcService {
 
     public float divide(double a, double b) {
         System.out.println("Dividing " + a + " by " + b);
-        return calc.divx(a, b);
+        float result = calc.divx(a, b);
+        System.out.println("Result: " + result);
+        return result;
     }
 
     public int sqr(int a) {

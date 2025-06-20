@@ -27,6 +27,15 @@ build PROJECT:
     if [ "$projectName" == "node" ]; then
         npm run build
         npm run test
+    elif [ "$projectName" == "java" ]; then
+        mvn clean package
+    elif [ "$projectName" == "wrapper" ]; then
+        cmake --build build --config Debug
+        if [ -f ./build/bin/Debug/calc-wrapperx.exe ]; then
+            echo "calc-wrapperx.exe built successfully."
+        else
+            echo "calc-wrapperx.exe not found. Please check the build process."
+        fi
     else
         cmake --build build
         if [ "$projectName" == "lib" ]; then
@@ -50,7 +59,7 @@ cp:
     #!/usr/bin/env bash
     echo ""
     echo ""
-    echo "Copy libcalc.lib"
+    echo "Copy libcalc.lib/libcalc.so to calc-node and calc-wrapper"
     cp calc-lib/include/calc.h calc-wrapper/include/calc.h
     cp calc-lib/include/calc.h calc-node/include/calc.h
     mkdir -p calc-wrapper/build/bin/Debug
@@ -72,13 +81,16 @@ build-all:
     projects=("lib" "wrapper" "node")
     for project in "${projects[@]}"; do
         echo "--- Building calc-$project"
-        # if [ "$project" == "lib" || "$project" == "wrapper" ]; then
-        #     just cmake $project
-        # fi
+        # if project is lib or wrapper, just cmake
+        if [ "$project" == "lib" ] || [ "$project" == "wrapper" ]; then
+            just clean $project
+            just cmake $project
+        fi
         just build $project
         echo "--- Finished calc-$project"
     done
     just test-wrapper
+    just test-java
 
 test-node:
     #!/usr/bin/env bash
@@ -105,7 +117,9 @@ test-wrapper:
         ./build/bin/calc-wrapperx divide 8 2
         ./build/bin/calc-wrapperx square 8
     fi
+
 test-java:
     #!/usr/bin/env bash
     cd calc-java
-    mvn spring-boot:run
+    mvn spring-boot:run \
+        -Dspring-boot.run.jvmArguments="-Djava.library.path=/home/kira/git/devopsnextgenx/calc-api/calc-lib/build"

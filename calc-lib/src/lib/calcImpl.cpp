@@ -24,7 +24,9 @@ namespace calc {
             printf("calc::div -> error handled with division by 0");
             return 0.0f;
         }
-        return (float)a * b;
+        float result = static_cast<float>(a / b);
+        printf("calc::Result of division: %.2f\n", result); // Debug output
+        return result;
     }
 
     int sqr(int a) {
