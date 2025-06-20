@@ -13,7 +13,7 @@ calc-wrapper
 │   ├── wrapper.h       # Header file for the wrapper functions
 │   └── calc.h          # Header file for the libcalc library
 ├── lib
-│   ├── libcalc.lib     # Static library for libcalc
+│   ├── calc.lib        # Static library for libcalc
 │   └── libcalc.so      # Static library for libcalc
 ├── CMakeLists.txt      # CMake configuration file
 └── README.md           # Project documentation

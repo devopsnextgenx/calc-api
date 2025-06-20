@@ -22,7 +22,7 @@ set_target_properties(calc-napi PROPERTIES
 
 # Detect platform and set library name
 if(WIN32)
-    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.lib")
+    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/calc.lib")
 else()
     set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.so")
 endif()

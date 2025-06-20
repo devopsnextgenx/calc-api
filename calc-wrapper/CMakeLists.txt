@@ -28,7 +28,7 @@ target_include_directories(calc-wrapperx PUBLIC include)
 
 # Detect platform and set library name
 if(WIN32)
-    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.lib")
+    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/calc.lib")
 else()
     set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.so")
 endif()

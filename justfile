@@ -59,21 +59,31 @@ cp:
     #!/usr/bin/env bash
     echo ""
     echo ""
-    echo "Copy libcalc.lib/libcalc.so to calc-node and calc-wrapper"
+    echo "Copy calc.lib/libcalc.so to calc-node and calc-wrapper"
     cp calc-lib/include/calc.h calc-wrapper/include/calc.h
     cp calc-lib/include/calc.h calc-node/include/calc.h
     mkdir -p calc-wrapper/build/bin/Debug
     # for windows dll and for linux so
     if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+        echo "Copying calc.so calc-node/libs"
         cp calc-lib/build/libcalc.so calc-node/libs/
+        echo "Copying calc.so calc-node/build"
         cp calc-lib/build/libcalc.so calc-node/build/
+        echo "Copying calc.so calc-wrapper/libs"
         cp calc-lib/build/libcalc.so calc-wrapper/libs/
+        echo "Copying calc.so calc-wrapper/build/bin/Debug"
         cp calc-lib/build/libcalc.so calc-wrapper/build/bin/Debug/
     else
-        cp calc-lib/build/Debug/libcalc.lib calc-node/libs/
-        cp calc-lib/build/Debug/libcalc.dll calc-node/build/
-        cp calc-lib/build/Debug/libcalc.lib calc-wrapper/libs/
-        cp calc-lib/build/Debug/libcalc.dll calc-wrapper/build/bin/Debug/
+        mkdir -p calc-node/build
+        echo "Copying calc.lib calc-node/libs"
+        cp calc-lib/build/Debug/calc.lib calc-node/libs/
+        echo "Copying calc.dll calc-node/build"
+        cp calc-lib/build/Debug/calc.dll calc-node/build/
+        echo "Copying calc.lib calc-wrapper/libs"
+        cp calc-lib/build/Debug/calc.lib calc-wrapper/libs/
+        echo "Copying calc.dll calc-wrapper/build/bin/Debug"
+        cp calc-lib/build/Debug/calc.dll calc-wrapper/build/bin/Debug/
+        
     fi
 
 build-all:
@@ -83,7 +93,7 @@ build-all:
         echo "--- Building calc-$project"
         # if project is lib or wrapper, just cmake
         if [ "$project" == "lib" ] || [ "$project" == "wrapper" ]; then
-            just clean $project
+            # just clean $project
             just cmake $project
         fi
         just build $project
@@ -100,8 +110,8 @@ test-node:
 test-wrapper:
     #!/usr/bin/env bash
     cd calc-wrapper
-    # if ./build/bin/Debug/calc-wrapper.exe exists, run it
-    if [ -f ./build/bin/Debug/calc-wrapper.exe ]; then
+    # if ./build/bin/Debug/calc-wrapperx.exe exists, run it
+    if [ -f ./build/bin/Debug/calc-wrapperx.exe ]; then
         echo "Running calc-wrapperx.exe tests..."
         ./build/bin/Debug/calc-wrapperx.exe add 1 2
         ./build/bin/Debug/calc-wrapperx.exe substract 5 3
@@ -121,5 +131,9 @@ test-wrapper:
 test-java:
     #!/usr/bin/env bash
     cd calc-java
-    mvn spring-boot:run \
-        -Dspring-boot.run.jvmArguments="-Djava.library.path=/home/kira/git/devopsnextgenx/calc-api/calc-lib/build"
+    echo "Running calc-java tests..."
+    if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+        mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Djava.library.path=/home/kira/git/devopsnextgenx/calc-api/calc-lib/build"
+    else
+        mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Djava.library.path=D:\github\devopsnextgenx\calc-api\calc-java\src\main\resources\native"
+    fi
