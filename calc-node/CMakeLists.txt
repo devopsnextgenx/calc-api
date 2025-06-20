@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
+project(calc-napi VERSION 0.1.0 LANGUAGES C CXX)
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
@@ -7,7 +8,6 @@ if(NOT DEFINED CMAKE_JS_INC OR NOT DEFINED CMAKE_JS_LIB)
     message(FATAL_ERROR "This project must be built with cmake-js. Run: cmake-js build")
 endif()
 
-project(calc-napi VERSION 0.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 add_definitions(-DNAPI_VERSION=9)
@@ -31,7 +31,7 @@ endif()
 if(MSVC)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/node.lib ${CALC_LIB})
 else()
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB} ${CALC_LIB})
 endif()
 
 

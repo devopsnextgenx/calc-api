@@ -3,7 +3,8 @@ package io.calc.nativex;
 public class Calc {
 
   static {
-    System.loadLibrary("libcalc"); 
+    // System.loadLibrary("libcalc"); // windows needs actual file name libcalc.dll
+    System.loadLibrary("calc"); // linux needs calc when file name libcalc.so
   }
 
   public native int add(int a, int b);
