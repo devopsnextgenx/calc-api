@@ -10,9 +10,13 @@ calc-lib
 ├── README.md            # Project documentation
 ├── src                  # Source files
 │   ├── lib              # Library implementation
+│   │   ├── java         # Java Implementation
+│   │   │   ├── calc.cpp
 │   │   └── calcImpl.cpp    # Implementation of library functions
 │   └── main.cpp         # Entry point for the application
 ├── include              # Header files
+│   ├── java         # Java Implementation
+|   │   ├── calc.cpp
 │   └── calc.h         # Declarations of library functions
 ```
 
