@@ -8,14 +8,15 @@ This project provides a wrapper around the `libcalc` library, allowing for easie
 calc-wrapper
 ├── src
 │   ├── main.cpp        # Entry point of the application
-│   ├── wrapper.cpp     # Implementation of the wrapper functions
-│   └── wrapper.h       # Header file for the wrapper functions
+│   └── wrapper.cpp     # Implementation of the wrapper functions
 ├── include
-│   └── calc.h         # Header file for the libcalc library
+│   ├── wrapper.h       # Header file for the wrapper functions
+│   └── calc.h          # Header file for the libcalc library
 ├── lib
-│   └── libcalc.lib    # Static library for libcalc
-├── CMakeLists.txt     # CMake configuration file
-└── README.md          # Project documentation
+│   ├── libcalc.lib     # Static library for libcalc
+│   └── libcalc.so      # Static library for libcalc
+├── CMakeLists.txt      # CMake configuration file
+└── README.md           # Project documentation
 ```
 
 ## Building the Project
