@@ -16,10 +16,20 @@ file(GLOB SOURCE_FILES "addons/*")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
+set_target_properties(calc-napi PROPERTIES
+    INSTALL_RPATH "$ORIGIN"
+)
+
+# Detect platform and set library name
+if(WIN32)
+    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.lib")
+else()
+    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.so")
+endif()
 
 # Link only to the correct node.lib for MSVC, otherwise use CMAKE_JS_LIB
 if(MSVC)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/node.lib ${CMAKE_SOURCE_DIR}/libs/libcalc.lib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/node.lib ${CALC_LIB})
 else()
     target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
 endif()

@@ -34,13 +34,13 @@ namespace CalcNapi {
     }
 
     Napi::Value CalcWrapper::GetVersion(const Napi::CallbackInfo& info) {
-        printf("CalcWrapper::GetVersion called\n");
+        printf("CalcNapi::CalcWrapper::GetVersion called\n");
         Napi::Env env = info.Env();
         return Napi::String::New(env, _calcNapiVersion);
     }
 
     Napi::Value CalcWrapper::GetUsage(const Napi::CallbackInfo& info) {
-        printf("CalcWrapper::GetUsage called\n");
+        printf("CalcNapi::CalcWrapper::GetUsage called\n");
         Napi::Env env = info.Env();
         Napi::Object result = Napi::Object::New(env);
         result.Set("add", this->_calcAdd);
@@ -55,7 +55,7 @@ namespace CalcNapi {
 
     // Arithmetic method implementations
     Napi::Value CalcWrapper::add(const Napi::CallbackInfo& info) {
-        printf("CalcWrapper::add called\n");
+        printf("CalcNapi::CalcWrapper::add called\n");
         Napi::Env env = info.Env();
         if (info.Length() < 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
             Napi::TypeError::New(env, "Expected two number arguments").ThrowAsJavaScriptException();
@@ -68,7 +68,7 @@ namespace CalcNapi {
     }
 
     Napi::Value CalcWrapper::substract(const Napi::CallbackInfo& info) {
-        printf("CalcWrapper::substract called\n");
+        printf("CalcNapi::CalcWrapper::substract called\n");
         Napi::Env env = info.Env();
         if (info.Length() < 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
             Napi::TypeError::New(env, "Expected two number arguments").ThrowAsJavaScriptException();
@@ -81,7 +81,7 @@ namespace CalcNapi {
     }
 
     Napi::Value CalcWrapper::multiply(const Napi::CallbackInfo& info) {
-        printf("CalcWrapper::multiply called\n");
+        printf("CalcNapi::CalcWrapper::multiply called\n");
         Napi::Env env = info.Env();
         if (info.Length() < 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
             Napi::TypeError::New(env, "Expected two number arguments").ThrowAsJavaScriptException();
@@ -94,7 +94,7 @@ namespace CalcNapi {
     }
 
     Napi::Value CalcWrapper::divide(const Napi::CallbackInfo& info) {
-        printf("CalcWrapper::divide called\n");
+        printf("CalcNapi::CalcWrapper::divide called\n");
         Napi::Env env = info.Env();
         if (info.Length() < 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
             Napi::TypeError::New(env, "Expected two number arguments").ThrowAsJavaScriptException();
@@ -111,7 +111,7 @@ namespace CalcNapi {
     }
 
     Napi::Value CalcWrapper::square(const Napi::CallbackInfo& info) {
-        printf("CalcWrapper::square called\n");
+        printf("CalcNapi::CalcWrapper::square called\n");
         Napi::Env env = info.Env();
         if (info.Length() < 1 || !info[0].IsNumber()) {
             Napi::TypeError::New(env, "Expected one number argument").ThrowAsJavaScriptException();

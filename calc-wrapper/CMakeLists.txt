@@ -18,14 +18,21 @@ set(SOURCES
 link_directories(${CMAKE_SOURCE_DIR}/libs)
 
 # Build the DLL
-add_library(calc-wrapper-lib SHARED src/wrapper.cpp)
+add_library(calc-wrapper SHARED src/wrapper.cpp)
 
 # Build the executable
-add_executable(calc-wrapper ${SOURCES})
+add_executable(calc-wrapperx ${SOURCES})
 
 # Specify include directories
-target_include_directories(calc-wrapper PUBLIC include)
+target_include_directories(calc-wrapperx PUBLIC include)
 
-# Link libcalc.lib to both targets
-target_link_libraries(calc-wrapper-lib PRIVATE ${CMAKE_SOURCE_DIR}/libs/libcalc.lib)
-target_link_libraries(calc-wrapper PRIVATE ${CMAKE_SOURCE_DIR}/libs/libcalc.lib)
+# Detect platform and set library name
+if(WIN32)
+    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.lib")
+else()
+    set(CALC_LIB "${CMAKE_SOURCE_DIR}/libs/libcalc.so")
+endif()
+
+# Link the correct library to both targets
+target_link_libraries(calc-wrapper PRIVATE ${CALC_LIB})
+target_link_libraries(calc-wrapperx PRIVATE ${CALC_LIB})

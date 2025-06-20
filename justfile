@@ -52,11 +52,15 @@ cp:
     echo ""
     echo "Copy libcalc.lib"
     cp calc-lib/build/Debug/libcalc.lib calc-wrapper/libs
+    cp calc-lib/build/libcalc.so calc-wrapper/libs
     mkdir -p calc-wrapper/build/bin/Debug
     cp calc-lib/build/Debug/libcalc.dll calc-wrapper/build/bin/Debug
+    cp calc-lib/build/libcalc.so calc-wrapper/build/bin/Debug
     cp calc-lib/include/calc.h calc-wrapper/include/calc.h
     cp calc-lib/build/Debug/libcalc.lib calc-node/libs
+    cp calc-lib/build/libcalc.so calc-node/libs
     cp calc-lib/build/Debug/libcalc.dll calc-node/build/
+    cp calc-lib/build/libcalc.so calc-node/build/
     cp calc-lib/include/calc.h calc-node/include/calc.h
 
 build-all:
@@ -64,9 +68,9 @@ build-all:
     projects=("lib" "wrapper" "node")
     for project in "${projects[@]}"; do
         echo "--- Building calc-$project"
-        if [ "$project" == "lib" || "$project" == "wrapper" ]; then
-            just cmake $project
-        fi
+        # if [ "$project" == "lib" || "$project" == "wrapper" ]; then
+        #     just cmake $project
+        # fi
         just build $project
         echo "--- Finished calc-$project"
     done

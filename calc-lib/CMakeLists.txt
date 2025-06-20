@@ -7,18 +7,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories("C:/Program Files/Zulu/zulu-21/include")
 include_directories("C:/Program Files/Zulu/zulu-21/include/win32")
+include_directories("/usr/lib/jvm/java-21-openjdk-amd64/include")
+include_directories("/usr/lib/jvm/java-21-openjdk-amd64/include/linux")
 
 # Define the library
-add_library(libcalc SHARED src/lib/calcImpl.cpp src/lib/java/calc.cpp) # This generate shared (.dll/.so) library as well as static (.lib) to be used during linking
+add_library(calc SHARED src/lib/calcImpl.cpp src/lib/java/calc.cpp) # This generate shared (.dll/.so) library as well as static (.lib) to be used during linking
 
 # Specify include directories
-target_include_directories(libcalc PUBLIC include)
+target_include_directories(calc PUBLIC include)
 
 # Define the executable
-add_executable(calc src/main.cpp)
+add_executable(calcx src/main.cpp)
 
 # Link the library to the executable
-target_link_libraries(calc PRIVATE libcalc)
+target_link_libraries(calcx PRIVATE calc)
 
 # Platform-specific settings
 if(WIN32)
@@ -36,6 +38,6 @@ add_custom_target(clean-all
 
 # Make sure your main build depends on clean-all
 add_custom_target(build-all
-    DEPENDS clean-all libcalc calc
+    DEPENDS clean-all calc calcx
     COMMENT "Clean and build all targets"
 )
