@@ -11,7 +11,7 @@ include_directories("/usr/lib/jvm/java-21-openjdk-amd64/include")
 include_directories("/usr/lib/jvm/java-21-openjdk-amd64/include/linux")
 
 # Define the library
-add_library(calc SHARED src/lib/calcImpl.cpp src/lib/java/calc.cpp) # This generate shared (.dll/.so) library as well as static (.lib) to be used during linking
+add_library(calc SHARED src/lib/calcImpl.cpp src/lib/vbLicense.cpp src/lib/java/calc.cpp) # This generate shared (.dll/.so) library as well as static (.lib) to be used during linking
 
 # Specify include directories
 target_include_directories(calc PUBLIC include)

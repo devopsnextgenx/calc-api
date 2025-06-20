@@ -3,7 +3,7 @@ import { CalcNapi } from './bindings';
 const test = async () => {
     const calc = new CalcNapi('trzxs9');
     console.log("CalcNapi version: ", calc.getVersion());
-    console.log("CalcNapi.add(1, 2): ", calc.add(1, 2));
+    console.log("CalcNapi.add(4, 2): ", calc.add(4, 2));
     console.log("CalcNapi.substract(5, 3): ", calc.sub(5, 3));
     console.log("CalcNapi.multiply(4, 6): ", calc.mul(4, 6));
     console.log("CalcNapi.multiply(2, 9): ", calc.mul(2, 9));

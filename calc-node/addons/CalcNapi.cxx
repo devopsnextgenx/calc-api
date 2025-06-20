@@ -7,7 +7,7 @@
 #include <napi.h>
 #include "CalcNapi.hxx"
 #include "calc.h"
-
+#include <string>
 
 using namespace Napi;
 
@@ -64,7 +64,11 @@ namespace CalcNapi {
         double a = info[0].As<Napi::Number>().DoubleValue();
         double b = info[1].As<Napi::Number>().DoubleValue();
         _calcAdd++;
-        return Napi::Number::New(env, calc::add(a, b));
+        std::string result = calc::add(static_cast<int>(a), static_cast<int>(b));
+        printf("CalcNapi::CalcWrapper::add result: %s\n", result.c_str());
+        Napi::Object resultObj = Napi::Object::New(env);
+        resultObj.Set("result", result);
+        return resultObj;
     }
 
     Napi::Value CalcWrapper::substract(const Napi::CallbackInfo& info) {
@@ -77,7 +81,7 @@ namespace CalcNapi {
         double a = info[0].As<Napi::Number>().DoubleValue();
         double b = info[1].As<Napi::Number>().DoubleValue();
         _calcSubstract++;
-        return Napi::Number::New(env, calc::sub(a, b));
+        return Napi::String::New(env, calc::sub(static_cast<int>(a), static_cast<int>(b)));
     }
 
     Napi::Value CalcWrapper::multiply(const Napi::CallbackInfo& info) {
@@ -90,7 +94,7 @@ namespace CalcNapi {
         double a = info[0].As<Napi::Number>().DoubleValue();
         double b = info[1].As<Napi::Number>().DoubleValue();
         _calcMultiply++;
-        return Napi::Number::New(env, calc::mul(a, b));
+        return Napi::String::New(env, calc::mul(static_cast<int>(a), static_cast<int>(b)));
     }
 
     Napi::Value CalcWrapper::divide(const Napi::CallbackInfo& info) {
@@ -107,7 +111,9 @@ namespace CalcNapi {
             return env.Null();
         }
         _calcDivide++;
-        return Napi::Number::New(env, calc::divx(a, b));
+        std::string result = calc::divx(a, b);
+        printf("CalcNapi::CalcWrapper::divide result: %s\n", result.c_str());
+        return Napi::String::New(env, result);
     }
 
     Napi::Value CalcWrapper::square(const Napi::CallbackInfo& info) {
@@ -119,7 +125,7 @@ namespace CalcNapi {
         }
         double a = info[0].As<Napi::Number>().DoubleValue();
         _calcSquare++;
-        return Napi::Number::New(env, calc::sqr(a));
+        return Napi::String::New(env, calc::sqr(static_cast<int>(a)));
     }
     
     Napi::Function CalcWrapper::GetClass(Napi::Env env) {

@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "cmake-js compile",
-    "test": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "test": "ts-node src/index.ts",
     "start": "nodemon --watch src --ext ts --exec ts-node src/server.ts"
   },
   "binary": {

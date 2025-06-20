@@ -20,27 +20,27 @@ public class CalcController {
     }
 
     @GetMapping("/add")
-    public ResponseEntity<Integer> add(@RequestParam int a, @RequestParam int b) {
+    public ResponseEntity<String> add(@RequestParam int a, @RequestParam int b) {
         return ResponseEntity.ok(calcService.add(a, b));
     }
 
     @GetMapping("/sub")
-    public ResponseEntity<Integer> sub(@RequestParam int a, @RequestParam int b) {
+    public ResponseEntity<String> sub(@RequestParam int a, @RequestParam int b) {
         return ResponseEntity.ok(calcService.subtract(a, b));
     }
 
     @GetMapping("/mul")
-    public ResponseEntity<Integer> mul(@RequestParam int a, @RequestParam int b) {
+    public ResponseEntity<String> mul(@RequestParam int a, @RequestParam int b) {
         return ResponseEntity.ok(calcService.multiply(a, b));
     }
 
     @GetMapping("/div")
-    public ResponseEntity<Float> div(@RequestParam double a, @RequestParam double b) {
+    public ResponseEntity<String> div(@RequestParam double a, @RequestParam double b) {
         return ResponseEntity.ok(calcService.divide(a, b));
     }
 
     @GetMapping("/sqr")
-    public ResponseEntity<Integer> sqr(@RequestParam int a) {
+    public ResponseEntity<String> sqr(@RequestParam int a) {
         return ResponseEntity.ok(calcService.sqr(a));
     }
 }

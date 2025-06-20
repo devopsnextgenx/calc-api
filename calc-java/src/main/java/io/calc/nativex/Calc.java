@@ -6,11 +6,11 @@ public class Calc {
     System.loadLibrary("calc"); // linux -> libcalc.so, windows -> calc.dll
   }
 
-  public native int add(int a, int b);
-  public native int sub(int a, int b);
-  public native int mul(int a, int b);
-  public native float divx(double a, double b);
-  public native int sqr(int a);
+  public native String add(int a, int b);
+  public native String sub(int a, int b);
+  public native String mul(int a, int b);
+  public native String divx(double a, double b);
+  public native String sqr(int a);
   public native Object getUsage(int a);
   public native Object getVersion(int a);
 }

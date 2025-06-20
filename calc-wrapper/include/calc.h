@@ -7,20 +7,15 @@
     #define EXPORT
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
 
 namespace calc {
-    EXPORT int add(int a, int b);
-    EXPORT int sub(int a, int b);
-    EXPORT int mul(int a, int b);
-    EXPORT float divx(double a, double b);
-    EXPORT int sqr(int a);
+    EXPORT char* add(int a, int b);
+    EXPORT char* sub(int a, int b);
+    EXPORT char* mul(int a, int b);
+    EXPORT char* divx(double a, double b);
+    EXPORT char* sqr(int a);
+    EXPORT void free_result(char* s);
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // CALCLIB_H
