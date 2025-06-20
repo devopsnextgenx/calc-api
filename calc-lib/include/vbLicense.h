@@ -21,6 +21,7 @@ private:
     VbLicense() = default;
     VbLicense(const VbLicense&) = delete;
     VbLicense& operator=(const VbLicense&) = delete;
+    bool initialized = false;
 
     // Map: userId -> productId -> cumulative token count for that product
     std::unordered_map<std::string, std::unordered_map<std::string, int>> userProductTokens;

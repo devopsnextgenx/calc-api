@@ -73,6 +73,7 @@ cp:
         cp calc-lib/build/libcalc.so calc-wrapper/libs/
         echo "Copying calc.so calc-wrapper/build/bin/Debug"
         cp calc-lib/build/libcalc.so calc-wrapper/build/bin/Debug/
+        cp calc-lib/build/Debug/libcalc.so calc-java/src/main/resources/native/
     else
         mkdir -p calc-node/build
         echo "Copying calc.lib calc-node/libs"
@@ -83,6 +84,7 @@ cp:
         cp calc-lib/build/Debug/calc.lib calc-wrapper/libs/
         echo "Copying calc.dll calc-wrapper/build/bin/Debug"
         cp calc-lib/build/Debug/calc.dll calc-wrapper/build/bin/Debug/
+        cp calc-lib/build/Debug/calc.dll calc-java/src/main/resources/native/
         
     fi
 
