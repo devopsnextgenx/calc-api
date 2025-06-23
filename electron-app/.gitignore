@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+out/
+
+# Electron specific
+*.asar
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# VSCode settings
+.vscode/
+
+# Coverage reports
+coverage/
+
+# Misc
+*.log
+*.tsbuildinfo
+.idea/
+*.sublime-workspace
+*.sublime-project
+node_modules/
+yarn.lock

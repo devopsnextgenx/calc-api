@@ -1,0 +1,63 @@
+{
+  "appId": "com.electron.ai-electron",
+  "productName": "ai-electron",
+  "directories": {
+    "output": "dist",
+    "buildResources": "build"
+  },
+  "files": [
+    "dist/**/*",
+    "src/electron/**/*",
+    "src/renderer/**/*",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "resources/",
+      "to": "resources/",
+      "filter": ["**/*"]
+    }
+  ],
+  "linux": {
+    "desktop": {
+      "entry": "build/ai-electron.desktop"
+    },
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": ["x64"]
+      },
+      {
+        "target": "deb",
+        "arch": ["x64"]
+      }
+    ],
+    "category": "Development",
+    "icon": "build/icons",
+    "maintainer": "Amit Kshirsagar <amit.kshirsagar.13@gmail.com>",
+    "description": "AI-powered Electron application",
+    "synopsis": "Modern AI application built with Electron"
+  },
+  "deb": {
+    "depends": [
+      "libgtk-3-0",
+      "libnotify4",
+      "libnss3",
+      "libxss1",
+      "libxtst6",
+      "xdg-utils",
+      "libatspi2.0-0",
+      "libdrm2",
+      "libxcomposite1",
+      "libxdamage1",
+      "libxrandr2",
+      "libgbm1",
+      "libasound2",
+      "libappindicator3-1"
+    ],
+    "priority": "optional"
+  },
+  "appImage": {
+    "category": "Development"
+  }
+}

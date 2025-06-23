@@ -1,0 +1,64 @@
+{
+  "name": "ai-electron",
+  "version": "1.0.0",
+  "description": "Electron app with React and TypeScript",
+  "type": "module",
+  "main": "src/electron/main.js",
+  "build": {
+    "protocols": {
+      "name": "ai-electron",
+      "schemes": [
+        "ai-electron"
+      ]
+    }
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "webpack --mode production",
+    "cleanAndBuild": "yarn clean && yarn build",
+    "dev": "yarn cleanAndBuild && concurrently \"yarn start\" \"yarn run electron:dev\"",
+    "electron:build": "yarn clean && yarn build && electron-builder",
+    "electron:dev": "cross-env NODE_ENV=development nodemon --watch src/main --watch src/renderer --exec electron .",
+    "start": "webpack serve --mode development"
+  },
+  "keywords": [],
+  "homepage": "https://github.com/devopsnextgenx/ai-electron",
+  "author": {
+    "name": "Amit Kshirsagar",
+    "email": "amit.kshirsagar.13@gmail.com"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.21",
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
+    "babel-loader": "^10.0.0",
+    "concurrently": "^9.1.2",
+    "css-loader": "^7.1.2",
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12",
+    "electron-reload": "^1.5.0",
+    "html-webpack-plugin": "^5.6.3",
+    "nodemon": "^3.0.1",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.1"
+  },
+  "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.6",
+    "cross-env": "^7.0.3",
+    "react": "^19.1.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.1"
+  }
+}
