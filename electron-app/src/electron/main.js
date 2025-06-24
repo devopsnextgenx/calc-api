@@ -4,6 +4,9 @@ import { fileURLToPath } from 'url';
 import { net } from 'electron';
 import * as nnet from 'net';
 import http from 'http';
+// load .env file
+import dotenv from 'dotenv';
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +23,13 @@ const WEB_PORT = 5000; // Port for web server
 //   }
 // }
 
+let clientApp = {
+  clientId: dotenv.config().parsed.CLIENT_ID || 'default-client-id',
+  clientSecret: dotenv.config().parsed.CLIENT_SECRET || 'default-client-secret',
+  redirectUri: dotenv.config().parsed.REDIRECT_URI || `http://localhost:${WEB_PORT}/redirectUrl`,
+}
+
+console.log('Client App Config:', clientApp);
 
 // Create simple web server to handle redirects
 let latestAccessCode = null; // Store latest code for renderer pickup
@@ -235,6 +245,9 @@ ipcMain.handle('get-latest-access-code', () => {
   return latestAccessCode;
 });
 
+ipcMain.handle('get-client-app-config', () => {
+  return clientApp;
+});
 
 
 ipcMain.handle('open-oauth-window', (event, authUrl) => {

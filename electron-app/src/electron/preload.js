@@ -42,7 +42,8 @@ contextBridge.exposeInMainWorld('electron', {
   openOAuthWindow: (authUrl) => ipcRenderer.invoke('open-oauth-window', authUrl),
   onOAuthAccessCode: (callback) => ipcRenderer.on('oauth-access-code', callback),
   removeOAuthAccessCode: (callback) => ipcRenderer.removeListener('oauth-access-code', callback),
-  getLatestAccessCode: () => ipcRenderer.invoke('get-latest-access-code')
+  getLatestAccessCode: () => ipcRenderer.invoke('get-latest-access-code'),
+  getClientAppConfig: () => ipcRenderer.invoke('get-client-app-config'),
 });
 
 // contextBridge.exposeInMainWorld('ffi', {

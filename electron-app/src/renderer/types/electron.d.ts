@@ -8,6 +8,11 @@ export interface IElectronAPI {
   onOAuthAccessCode: (callback: (event: any, accessCode: string) => void) => void;
   removeOAuthAccessCode: (callback: (event: any, accessCode: string) => void) => void;
   getLatestAccessCode: () => Promise<string | null>;
+  getClientAppConfig: () => Promise<{
+    clientId: string;
+    clientSecret: string;
+    redirectUri: string;
+  }>;
 }
 
 declare global {

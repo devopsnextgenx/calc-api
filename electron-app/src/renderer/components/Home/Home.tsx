@@ -13,16 +13,17 @@ function generateState(length = 16): string {
     return result;
 }
 
-const clientId = '20eba3233abd67b6c5c4'; // Replace with your client ID
-const clientSecret = '24cab6de5afba5efcdc27b0d4bbfedaaed652a43'; // WARNING: Never expose client secret in production frontend
-const returnUrl = 'http://localhost:5000/redirectUrl'; // Replace with your redirect URL
+let clientApp = undefined as any; // Placeholder for client app config
+window.electron.getClientAppConfig().then(config => {
+    clientApp = config;
+});
 
 // Start OAuth2.0 flow (no PKCE for GitHub OAuth apps)
 async function startOAuthFlow() {
-    const redirectUri = encodeURIComponent(returnUrl);
+    const redirectUri = encodeURIComponent(clientApp.returnUrl);
     const state = generateState();
     sessionStorage.setItem('oauth_state', state);
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&clientSecret=${clientSecret}&state=${state}&redirect_uri=${redirectUri}&scope=read:user`;
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientApp.clientId}&client_secret=${clientApp.clientSecret}&state=${state}&redirect_uri=${clientApp.redirectUri}&scope=read:user`;
     await window.electron.openOAuthWindow(authUrl);
 }
 
@@ -42,10 +43,10 @@ const Home: React.FC = () => {
             // Exchange code for token (GitHub returns URL-encoded string)
             console.log('Received OAuth code:', code);
             const body = new URLSearchParams({
-                client_id: clientId,
-                client_secret: clientSecret, // WARNING: Never expose in production
+                client_id: clientApp.clientId,
+                client_secret: clientApp.clientSecret, // WARNING: Never expose in production
                 code,
-                redirect_uri: returnUrl
+                redirect_uri: clientApp.redirectUri
             });
             try {
                 const response = await fetch('https://github.com/login/oauth/access_token', {
