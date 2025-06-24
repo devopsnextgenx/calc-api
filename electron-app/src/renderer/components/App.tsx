@@ -5,6 +5,7 @@ import Footer from './Footer/Footer';
 import Home from './Home/Home';
 import About from './About/About';
 import './App.css';
+import RepoList from './RepoList/RepoList';
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
       <div className='app-frame'>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/repoList" element={<RepoList />} />
           <Route path="/about" element={<About />} />
         </Routes>
       </div>

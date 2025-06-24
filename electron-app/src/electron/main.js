@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { net } from 'electron';
 import * as nnet from 'net';
 import http from 'http';
+// import express from 'express';
 // load .env file
 import dotenv from 'dotenv';
 dotenv.config();
@@ -12,16 +13,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const isDev = process.env.NODE_ENV === 'development';
 
-let PORT = 3005; // Port for instance management
+let PORT = 3000; // Port for instance management
 const WEB_PORT = 5000; // Port for web server
 
 
-// // Register custom protocol
-// function registerProtocol() {
-//   if (!app.isDefaultProtocolClient('ai-electron')) {
-//     app.setAsDefaultProtocolClient('ai-electron');
-//   }
-// }
+// Register custom protocol
+function registerProtocol() {
+  if (!app.isDefaultProtocolClient('ai-electron')) {
+    app.setAsDefaultProtocolClient('ai-electron');
+  }
+}
 
 let clientApp = {
   clientId: dotenv.config().parsed.CLIENT_ID || 'default-client-id',
@@ -34,90 +35,6 @@ console.log('Client App Config:', clientApp);
 // Create simple web server to handle redirects
 let latestAccessCode = null; // Store latest code for renderer pickup
 let authWindow = null;
-// const server = http.createServer((req, res) => {
-//   if (req.url.startsWith('/redirectUrl')) {
-//     // Parse query parameters (e.g., ?code=...&state=...)
-//     const urlObj = new URL(req.url, `http://localhost:${WEB_PORT}`);
-//     const accessCode = urlObj.searchParams.get('code');
-//     const state = urlObj.searchParams.get('state');
-
-//     // Store the code for renderer process
-//     latestAccessCode = accessCode;
-
-//     res.writeHead(200, { 'Content-Type': 'text/html' });
-//     res.end(`
-//       <!DOCTYPE html>
-//       <html>
-//       <head>
-//         <title>Access code received...</title>
-//       </head>
-//       <body>
-//         <h3>Redirecting to application for exchanging token...</h3>
-//       </body>
-//       </html>
-//     `);
-//     // Notify renderer process if window exists
-//     if (mainWindow && mainWindow.webContents) {
-//       mainWindow.webContents.send('oauth-access-code', accessCode);
-//       setTimeout(() => {
-//         authWindow.close();
-//       }, 500);
-//     }
-//     return;
-//   }
-
-//   // Default handler
-//   res.writeHead(200, { 'Content-Type': 'text/html' });
-//   res.end(`
-//     <!DOCTYPE html>
-//     <html>
-//     <head>
-//       <title>Redirecting...</title>
-//     </head>
-//     <body>
-//       <h3>Redirecting to application...</h3>
-//     </body>
-//     </html>
-//   `);
-// });
-
-// Instance management server
-
-// const instanceServer = nnet.createServer();
-// instanceServer.on('error', (err) => {
-//   if (err.code === 'EADDRINUSE') {
-//     // Another instance is running, connect to it
-//     const client = new nnet.Socket();
-    
-//     client.connect(PORT, 'localhost', () => {
-//       client.write('FOCUS');
-//       // Don't quit immediately to allow protocol handling
-//       setTimeout(() => app.quit(), 1000);
-//     });
-//   }
-// });
-
-// instanceServer.listen(PORT, () => {
-//   console.log(`Instance management server listening on port ${PORT}`);
-// });
-
-// instanceServer.on('connection', (socket) => {
-//   socket.on('data', (data) => {
-//     if (data.toString() === 'FOCUS') {
-//       if (mainWindow) {
-//         if (mainWindow.isMinimized()) {
-//           mainWindow.restore();
-//         }
-//         mainWindow.focus();
-//       }
-//     }
-//   });
-// });
-
-// Start web server
-// server.listen(WEB_PORT, () => {
-//   console.log(`Web server running on http://localhost:${WEB_PORT}`);
-// });
 
 if (isDev) {
   import('electron-reload').then(module => {
@@ -156,15 +73,15 @@ function waitForDevServer(url, retries = 30) {
 let mainWindow = null;
 
 async function createWindow() {
-  if (isDev) {
-    try {
-     // await waitForDevServer('http://localhost:3000');
-    } catch (error) {
-      console.error('Development server not available:', error);
-      app.quit();
-      return;
-    }
-  }
+  // if (isDev) {
+  //   try {
+  //    await waitForDevServer(`http://localhost:${PORT}`);
+  //   } catch (error) {
+  //     console.error('Development server not available:', error);
+  //     app.quit();
+  //     return;
+  //   }
+  // }
 
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -179,12 +96,13 @@ async function createWindow() {
 
   try {
     if (isDev) {
-      //await mainWindow.loadURL('http://localhost:3000');
+      // await mainWindow.loadURL(`http://localhost:${PORT}`);
       await mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
       mainWindow.webContents.openDevTools();
       console.log('Development mode: Loading from localhost:3000');
     } else {
-      await mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
+      // await mainWindow.loadURL(`http://localhost:${PORT}`);
+      // await mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
       console.log('Production mode: Loading from local file');
     }
   } catch (error) {
@@ -228,7 +146,8 @@ if (!gotTheLock) {
     }
   });
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
+    // await startExpressServer();
     createWindow();
     registerProtocol();
   });
@@ -300,3 +219,19 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+let serverStarted = false;
+
+async function startExpressServer() {
+  if (serverStarted) return;
+  const appServer = express();
+  const staticPath = path.join(__dirname, '..', '..', 'dist');
+  appServer.use(express.static(staticPath));
+  appServer.get('*', (req, res) => {
+    res.sendFile(path.join(staticPath, 'index.html'));
+  });
+  appServer.listen(PORT, () => {
+    console.log(`Express server running at http://localhost:${PORT}`);
+    serverStarted = true;
+  });
+}
