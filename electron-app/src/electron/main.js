@@ -2,10 +2,6 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { net } from 'electron';
-import * as nnet from 'net';
-import http from 'http';
-// import express from 'express';
-// load .env file
 import dotenv from 'dotenv';
 dotenv.config();
 import { createRequire } from 'module';
@@ -82,24 +78,6 @@ function waitForDevServer(url, retries = 30) {
 }
 
 let mainWindow = null;
-const require = createRequire(import.meta.url);
-const addon = require(path.join(__dirname, '..','..', 'resources', 'calc-napi.node'));
-const CalcNapi = addon.CalcNapi;
-const test = async () => {
-    const calc = new CalcNapi('trzxs9');
-    console.log("CalcNapi version: ", calc.getVersion());
-    console.log("CalcNapi.add(4, 2): ", calc.add(4, 2));
-    console.log("CalcNapi.substract(5, 3): ", calc.sub(5, 3));
-    console.log("CalcNapi.multiply(4, 6): ", calc.mul(4, 6));
-    console.log("CalcNapi.multiply(2, 9): ", calc.mul(2, 9));
-    console.log("CalcNapi.multiply(3, 4): ", calc.mul(3, 4));
-    console.log("CalcNapi.divide(8, 2): ", calc.divx(8, 2));
-    console.log("CalcNapi.square(3): ", calc.sqr(3));
-    console.log("CalcNapi.square(5): ", calc.sqr(5));
-    console.log("CalcNapi usage: ", calc.getUsage());
-}
-
-test();
 
 async function createWindow() {
   if (isDev) {
@@ -165,6 +143,10 @@ let globalCalcInstance = null;
 ipcMain.handle('calc-napi', () => {
   return getLibraryPath();
 });
+
+const require = createRequire(import.meta.url);
+const addon = require(path.join(__dirname, '..','..', 'resources', 'calc-napi.node'));
+const CalcNapi = addon.CalcNapi;
 
 // Calc-napi IPC handlers
 ipcMain.handle('calc-create-instance', (event, license) => {
