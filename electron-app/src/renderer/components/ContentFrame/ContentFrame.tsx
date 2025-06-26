@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './ContentFrame.css';
 
 const ContentFrame: React.FC = () => {
@@ -51,7 +53,7 @@ const ContentFrame: React.FC = () => {
         return { operation, parts };
     };
 
-    const performSquareOperation = async (parts: string[]): Promise<string | null> => {
+    const performSquareOperation = async (parts: string[]): Promise<any | null> => {
         if (parts.length !== 2) {
             setError('Square operation requires one number (e.g., "sqr, 5")');
             return null;
@@ -62,10 +64,10 @@ const ContentFrame: React.FC = () => {
             return null;
         }
         const calcResult = await window.electron.calcNapi.sqr(a);
-        return `${a}² = ${calcResult}`;
+        return { operation: `${a}²`, result: `${calcResult}`};
     };
 
-    const performBinaryOperation = async (operation: string, parts: string[]): Promise<string | null> => {
+    const performBinaryOperation = async (operation: string, parts: string[]): Promise<any | null> => {
         if (parts.length !== 3) {
             setError(`${operation} operation requires two numbers (e.g., "${operation}, 5, 8")`);
             return null;
@@ -106,10 +108,10 @@ const ContentFrame: React.FC = () => {
                 setError('Unknown operation');
                 return null;
         }
-        return `${a} ${operationSymbol} ${b} = ${calcResult}`;
+        return {operation: `${a} ${operationSymbol} ${b}`, result: `${calcResult}`};
     };
 
-    const processCalculationResult = (calcResult: any, resultDisplay: string): void => {
+    const processCalculationResult = (operation: string, calcResult: any): void => {
         if (typeof calcResult === 'object' && calcResult !== null) {
             const result = calcResult;
             if (result.status === 'error') {
@@ -117,14 +119,44 @@ const ContentFrame: React.FC = () => {
                 setResult('');
                 return;
             } else if (result.result !== undefined) {
-                setResult(resultDisplay.replace(`= ${calcResult}`, `= ${result.result}`));
+                // For object results, show both the calculation and the JSON
+                const jsonPart = JSON.stringify(calcResult, null, 2);
+                setResult(`${jsonPart}`);
             } else {
-                setResult(resultDisplay.replace(`= ${calcResult}`, `= ${JSON.stringify(calcResult)}`));
+                const jsonPart = JSON.stringify(calcResult, null, 2);
+                setResult(`${jsonPart}`);
             }
         } else {
-            setResult(resultDisplay);
+            setResult(`${calcResult}`);
         }
         setError('');
+    };
+
+    const renderResult = (resultText: string) => {
+        let formattedJson = '';
+        try {
+            // Try to parse and format as JSON
+            const parsed = JSON.parse(resultText);
+            formattedJson = JSON.stringify(parsed, null, 2);
+        } catch (error) {
+            // If parsing fails, treat as plain text but still format with JSON highlighting
+            formattedJson = resultText;
+        }
+
+        return (
+            <SyntaxHighlighter
+                language="json"
+                style={vscDarkPlus}
+                customStyle={{
+                    margin: 0,
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    backgroundColor: '#1e1e1e'
+                }}
+            >
+                {formattedJson}
+            </SyntaxHighlighter>
+        );
     };
 
     const handleCalculate = async () => {
@@ -142,7 +174,7 @@ const ContentFrame: React.FC = () => {
             if (!validationResult) return;
 
             const { operation, parts } = validationResult;
-            let resultDisplay: string | null;
+            let resultDisplay: any | null;
 
             if (operation === 'sqr') {
                 resultDisplay = await performSquareOperation(parts);
@@ -152,14 +184,14 @@ const ContentFrame: React.FC = () => {
 
             if (!resultDisplay) return;
 
-            // Extract the calc result from the display string for processing
-            const calcResultRegex = /= (.+)$/;
-            const calcResultMatch = calcResultRegex.exec(resultDisplay);
-            if (calcResultMatch) {
-                const calcResult = calcResultMatch[1];
-                processCalculationResult(calcResult, resultDisplay);
+            // Handle JSON resultDisplay with operation and result
+            if (typeof resultDisplay === 'object' && resultDisplay !== null) {
+                const { operation, result: calcResult } = resultDisplay;
+                const formattedDisplay = `${operation} = ${calcResult}`;
+                processCalculationResult(operation, calcResult);
             } else {
-                setResult(resultDisplay);
+                // Fallback for non-JSON resultDisplay
+                setResult(String(resultDisplay));
                 setError('');
             }
         } catch (err: any) {
@@ -188,7 +220,7 @@ const ContentFrame: React.FC = () => {
                 {result && (
                     <div className="result">
                         <h3>Result:</h3>
-                        <pre>{result}</pre>
+                        {renderResult(result)}
                     </div>
                 )}
             </div>
