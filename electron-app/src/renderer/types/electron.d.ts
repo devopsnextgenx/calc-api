@@ -1,8 +1,17 @@
+export interface CalcNapi {
+  createInstance: (license: string) => Promise<{ success: boolean; version?: string; error?: string }>;
+  add: (a: number, b: number) => Promise<number>;
+  sub: (a: number, b: number) => Promise<number>;
+  mul: (a: number, b: number) => Promise<number>;
+  divx: (a: number, b: number) => Promise<number>;
+  sqr: (a: number) => Promise<number>;
+  getVersion: () => Promise<string>;
+  getUsage: () => Promise<string>;
+}
+
 export interface IElectronAPI {
-  ipcRenderer: {
+  pathLoader: {
     invoke(channel: string, ...args: any[]): Promise<any>;
-    on(channel: string, func: (...args: any[]) => void): void;
-    once(channel: string, func: (...args: any[]) => void): void;
   };
   openOAuthWindow: (url: string) => Promise<void>;
   onOAuthAccessCode: (callback: (event: any, accessCode: string) => void) => void;
@@ -13,6 +22,7 @@ export interface IElectronAPI {
     clientSecret: string;
     redirectUri: string;
   }>;
+  calcNapi: CalcNapi;
 }
 
 declare global {

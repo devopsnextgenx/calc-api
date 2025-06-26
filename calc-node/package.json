@@ -5,8 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "build": "cmake-js compile",
-    "test": "ts-node src/index.ts",
-    "start": "nodemon --watch src --ext ts --exec ts-node src/server.ts"
+    "test-ts": "ts-node src/index.ts",
+    "test": "node src/index.js",
+    "start-ts": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
+    "start": "nodemon --watch src node src/server.js"
   },
   "binary": {
     "napi_versions": [

@@ -13,8 +13,8 @@ int main() {
     std::cout << "Enter b: ";
     std::cin >> b;
     // Example usage of the library function
-    std::string result = add(5, 3); // Assuming add is a function declared in mylib.h
-    std::cout << "The result of adding 5 and 3 is: " << result << std::endl;
+    std::string result = add(a, b); // Assuming add is a function declared in mylib.h
+    std::cout << "The result of adding " << a << " and " << b << " is: " << result << std::endl;
 
     return 0;
 }

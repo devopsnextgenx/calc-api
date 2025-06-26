@@ -6,8 +6,20 @@ import './styles/dark-theme.css';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+
+const renderApp = () => {
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+};
+
+renderApp();
+
+// Enable HMR in development
+if (process.env.NODE_ENV === 'development' && module.hot) {
+  module.hot.accept('./components/App', () => {
+    renderApp();
+  });
+}

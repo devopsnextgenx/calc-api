@@ -8,6 +8,7 @@ import http from 'http';
 // load .env file
 import dotenv from 'dotenv';
 dotenv.config();
+import { createRequire } from 'module';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,22 +45,32 @@ if (isDev) {
       hardResetMethod: 'exit'
     });
   });
+
+  // Add IPC handler for renderer reload
+  ipcMain.handle('reload-window', () => {
+    if (mainWindow) {
+      mainWindow.reload();
+    }
+  });
 }
 
 function waitForDevServer(url, retries = 30) {
   return new Promise((resolve, reject) => {
     const tryConnection = (currentRetry) => {
+      if (currentRetry === 0) {
+        reject(new Error('Dev server not ready after maximum retries'));
+        return;
+      }
+
       const request = net.request(url);
       
-      request.on('response', (response) => {
+      request.on('response', () => {
+        console.log('Dev server is ready!');
         resolve();
       });
 
-      request.on('error', (error) => {
-        if (currentRetry === 0) {
-          reject(new Error('Dev server not ready'));
-          return;
-        }
+      request.on('error', () => {
+        console.log(`Waiting for dev server... (${currentRetry} retries left)`);
         setTimeout(() => tryConnection(currentRetry - 1), 1000);
       });
 
@@ -71,17 +82,35 @@ function waitForDevServer(url, retries = 30) {
 }
 
 let mainWindow = null;
+const require = createRequire(import.meta.url);
+const addon = require(path.join(__dirname, '..','..', 'resources', 'calc-napi.node'));
+const CalcNapi = addon.CalcNapi;
+const test = async () => {
+    const calc = new CalcNapi('trzxs9');
+    console.log("CalcNapi version: ", calc.getVersion());
+    console.log("CalcNapi.add(4, 2): ", calc.add(4, 2));
+    console.log("CalcNapi.substract(5, 3): ", calc.sub(5, 3));
+    console.log("CalcNapi.multiply(4, 6): ", calc.mul(4, 6));
+    console.log("CalcNapi.multiply(2, 9): ", calc.mul(2, 9));
+    console.log("CalcNapi.multiply(3, 4): ", calc.mul(3, 4));
+    console.log("CalcNapi.divide(8, 2): ", calc.divx(8, 2));
+    console.log("CalcNapi.square(3): ", calc.sqr(3));
+    console.log("CalcNapi.square(5): ", calc.sqr(5));
+    console.log("CalcNapi usage: ", calc.getUsage());
+}
+
+test();
 
 async function createWindow() {
-  // if (isDev) {
-  //   try {
-  //    await waitForDevServer(`http://localhost:${PORT}`);
-  //   } catch (error) {
-  //     console.error('Development server not available:', error);
-  //     app.quit();
-  //     return;
-  //   }
-  // }
+  if (isDev) {
+    try {
+     await waitForDevServer(`http://localhost:${PORT}`);
+    } catch (error) {
+      console.error('Development server not available:', error);
+      app.quit();
+      return;
+    }
+  }
 
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -96,13 +125,22 @@ async function createWindow() {
 
   try {
     if (isDev) {
-      // await mainWindow.loadURL(`http://localhost:${PORT}`);
-      await mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
+      await mainWindow.loadURL(`http://localhost:${PORT}`);
       mainWindow.webContents.openDevTools();
       console.log('Development mode: Loading from localhost:3000');
+      
+      // Set up auto-reload on renderer process crash/unresponsive
+      mainWindow.webContents.on('unresponsive', () => {
+        console.log('Renderer became unresponsive, reloading...');
+        mainWindow.reload();
+      });
+      
+      mainWindow.webContents.on('crashed', () => {
+        console.log('Renderer crashed, reloading...');
+        mainWindow.reload();
+      });
     } else {
-      // await mainWindow.loadURL(`http://localhost:${PORT}`);
-      // await mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
+      await mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
       console.log('Production mode: Loading from local file');
     }
   } catch (error) {
@@ -113,12 +151,115 @@ async function createWindow() {
 const getLibraryPath = () => {
   if (app.isPackaged) {
     // In production, use the resources path
-    return path.join(process.resourcesPath, 'resources', 'libb64.so');
+    return path.join(process.resourcesPath, 'resources', 'calc-napi.node');
   } else {
     // In development
-    return path.join(__dirname, '..', '..', 'resources', 'libb64.so');
+    return path.join(__dirname, '..', '..', 'resources', 'calc-napi.node');
   }
 };
+
+// Global calc instance to maintain state
+let globalCalcInstance = null;
+
+// Make it available to renderer process through IPC
+ipcMain.handle('calc-napi', () => {
+  return getLibraryPath();
+});
+
+// Calc-napi IPC handlers
+ipcMain.handle('calc-create-instance', (event, license) => {
+  try {
+    globalCalcInstance = new CalcNapi(license || 'trzxs9');
+    return { success: true, version: globalCalcInstance.getVersion() };
+  } catch (error) {
+    console.error('Failed to create calc instance:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('calc-add', (event, a, b) => {
+  try {
+    if (!globalCalcInstance) {
+      globalCalcInstance = new CalcNapi('trzxs9');
+    }
+    return globalCalcInstance.add(a, b);
+  } catch (error) {
+    console.error('Calc add error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('calc-sub', (event, a, b) => {
+  try {
+    if (!globalCalcInstance) {
+      globalCalcInstance = new CalcNapi('trzxs9');
+    }
+    return globalCalcInstance.sub(a, b);
+  } catch (error) {
+    console.error('Calc sub error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('calc-mul', (event, a, b) => {
+  try {
+    if (!globalCalcInstance) {
+      globalCalcInstance = new CalcNapi('trzxs9');
+    }
+    return globalCalcInstance.mul(a, b);
+  } catch (error) {
+    console.error('Calc mul error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('calc-divx', (event, a, b) => {
+  try {
+    if (!globalCalcInstance) {
+      globalCalcInstance = new CalcNapi('trzxs9');
+    }
+    return globalCalcInstance.divx(a, b);
+  } catch (error) {
+    console.error('Calc divx error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('calc-sqr', (event, a) => {
+  try {
+    if (!globalCalcInstance) {
+      globalCalcInstance = new CalcNapi('trzxs9');
+    }
+    return globalCalcInstance.sqr(a);
+  } catch (error) {
+    console.error('Calc sqr error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('calc-get-version', () => {
+  try {
+    if (!globalCalcInstance) {
+      globalCalcInstance = new CalcNapi('trzxs9');
+    }
+    return globalCalcInstance.getVersion();
+  } catch (error) {
+    console.error('Calc getVersion error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('calc-get-usage', () => {
+  try {
+    if (!globalCalcInstance) {
+      globalCalcInstance = new CalcNapi('trzxs9');
+    }
+    return globalCalcInstance.getUsage();
+  } catch (error) {
+    console.error('Calc getUsage error:', error);
+    throw error;
+  }
+});
 
 
 // Handle custom protocol
@@ -147,17 +288,10 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(async () => {
-    // await startExpressServer();
     createWindow();
     registerProtocol();
   });
 }
-
-
-// Make it available to renderer process through IPC
-ipcMain.handle('libb64', () => {
-  return getLibraryPath();
-});
 
 // Add IPC handler for renderer to get latest access code
 ipcMain.handle('get-latest-access-code', () => {
@@ -191,7 +325,6 @@ ipcMain.handle('open-oauth-window', (event, authUrl) => {
       // const urlObj = new URL(req.url, `http://localhost:${WEB_PORT}`);
       const newUrlObj = new URL(newUrl);
       const accessCode = newUrlObj.searchParams.get('code');
-      const state = newUrlObj.searchParams.get('state');
       console.log('Access code received:', accessCode);
       debugger;
       // Store the code for renderer process

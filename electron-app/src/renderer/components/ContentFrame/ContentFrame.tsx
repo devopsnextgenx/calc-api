@@ -3,76 +3,101 @@ import './ContentFrame.css';
 
 const ContentFrame: React.FC = () => {
     const [inputText, setInputText] = useState('');
-    const [encodedText, setEncodedText] = useState('');
-    const [libPath, setLibb64] = useState('');
+    const [result, setResult] = useState('');
+    const [calcApiReady, setCalcApiReady] = useState(false);
     const [error, setError] = useState('');
+    const [version, setVersion] = useState('');
 
     useEffect(() => {
-        const initLibrary = async () => {
+        console.log('ContentFrame useEffect called');
+        const initializeCalc = async () => {
             try {
-                const libb64 = await window.electron.ipcRenderer.invoke('libb64');
-                setLibb64(libb64);
-                
-                // Use the exposed ffi from preload
-                const lib = (window as Window).ffi.Library(libb64, {
-                    'encode_base64': ['string', ['string']]
-                });
-                
-                (window as Window).libb64 = lib;
+                if (window.electron?.calcNapi) {
+                    const initResult = await window.electron.calcNapi.createInstance('trzxs9');
+                    if (initResult.success) {
+                        setCalcApiReady(true);
+                        setVersion(initResult.version ?? '');
+                        setError('');
+                        console.log('Calc API initialized successfully');
+                    } else {
+                        setError(`Failed to initialize calc API: ${initResult.error}`);
+                    }
+                } else {
+                    setError('calcNapi library not available');
+                }
             } catch (err: any) {
-                setError(`Failed to load library: ${err.message}`);
+                setError(`Initialization failed: ${err.message}`);
             }
         };
 
-        initLibrary();
+        initializeCalc();
     }, []);
 
-    const handleEncode = () => {
+    const handleEncode = async () => {
         try {
             if (!inputText) {
                 setError('Please enter some text to encode');
                 return;
             }
-
-            const lib = (window as any).libb64;
-            if (!lib) {
+            if (!calcApiReady) {
                 setError('Library not loaded yet');
                 return;
             }
 
-            const encoded = lib.encode_base64(inputText);
-            setEncodedText(encoded);
+            // Parse input as numbers for calculation
+            const numbers = inputText.split(',').map(n => parseFloat(n.trim()));
+            if (numbers.length < 2 || numbers.some(isNaN)) {
+                setError('Please enter two numbers separated by comma (e.g., 5, 8)');
+                return;
+            }
+
+            const calcResult = await window.electron.calcNapi.add(numbers[0], numbers[1]);
+            
+            // Handle the response properly - it might be a JSON object
+            if (typeof calcResult === 'object' && calcResult !== null) {
+                const result = calcResult as any;
+                if (result.status === 'error') {
+                    setError(`Calculation failed: ${result.errorMessage ?? 'Unknown error'}`);
+                    setResult('');
+                    return;
+                } else if (result.result !== undefined) {
+                    setResult(`${numbers[0]} + ${numbers[1]} = ${result.result}`);
+                } else {
+                    setResult(`${numbers[0]} + ${numbers[1]} = ${JSON.stringify(calcResult)}`);
+                }
+            } else {
+                setResult(`${numbers[0]} + ${numbers[1]} = ${calcResult}`);
+            }
             setError('');
         } catch (err: any) {
-            setError(`Encoding failed: ${err.message}`);
+            setError(`Calc failed: ${err.message}`);
         }
     };
 
     return (
         <div className="content-frame">
             <div className="encoding-container">
+                <div className="library-info">
+                    <small>Library statusx: {calcApiReady ? `Loaded (v${version})` : 'Not loaded'}</small>
+                </div>
                 <div className="input-group">
                     <input
                         type="text"
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
-                        placeholder="Enter text to encode"
+                        placeholder="Enter two numbers separated by comma (e.g., 5, 8)"
                     />
-                    <button onClick={handleEncode}>Encode</button>
+                    <button onClick={handleEncode}>Calculate</button>
                 </div>
                 
                 {error && <div className="error-message">{error}</div>}
                 
-                {encodedText && (
+                {result && (
                     <div className="result">
-                        <h3>Encoded Result:</h3>
-                        <pre>{encodedText}</pre>
+                        <h3>Result:</h3>
+                        <pre>{result}</pre>
                     </div>
                 )}
-                
-                <div className="library-info">
-                    <small>Library path: {libPath}</small>
-                </div>
             </div>
         </div>
     );

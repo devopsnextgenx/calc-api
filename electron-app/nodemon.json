@@ -1,0 +1,17 @@
+{
+  "watch": [
+    "src/electron/**/*"
+  ],
+  "ext": "js,ts,json",
+  "ignore": [
+    "node_modules/**/*",
+    "dist/**/*",
+    "build/**/*",
+    "src/renderer/**/*"
+  ],
+  "exec": "electron .",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": 2000
+}

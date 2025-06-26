@@ -16,10 +16,10 @@
     "clean": "rimraf dist",
     "build": "webpack --mode production",
     "cleanAndBuild": "yarn clean && yarn build",
-    "dev": "yarn cleanAndBuild && concurrently \"yarn start\" \"yarn run electron:dev\"",
+    "dev": "concurrently \"yarn start\" \"yarn run electron:dev\"",
     "electron:build": "yarn clean && yarn build && electron-builder",
-    "electron:dev": "cross-env NODE_ENV=development nodemon --watch src/main --watch src/renderer --exec electron .",
-    "start": "webpack serve --mode development"
+    "electron:dev": "cross-env NODE_ENV=development nodemon --watch src/electron --watch src/renderer --ext js,ts,tsx --delay 2s --exec electron .",
+    "start": "webpack serve --mode development --open"
   },
   "keywords": [],
   "homepage": "https://github.com/devopsnextgenx/ai-electron",
@@ -58,6 +58,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "module": "^1.2.5",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.0",
